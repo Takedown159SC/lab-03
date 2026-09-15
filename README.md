@@ -2,8 +2,8 @@
 
 ## Student Details
 
-- **Full Name:** `<Enter name>`
-- **CCID:** `<Enter ccid>`
+- **Full Name:** `Jacob Russel Camera Templado`
+- **CCID:** `templado`
 
 ## References and Resources
 
