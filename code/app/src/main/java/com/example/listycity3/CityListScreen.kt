@@ -1,7 +1,5 @@
 package com.example.listycity3
 
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,10 +9,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.listycity3.ui.theme.ListyCity3Theme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
@@ -27,16 +23,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.graphics.Color
-
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.platform.LocalFocusManager
 
 @Composable
 fun CityListScreen(
     cities: List<City>,
     onAddCity: (City) -> Unit,
+    onEditCity: (City,String) -> Unit,
+    onEditProv: (City,String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember {mutableStateOf("")}
@@ -90,7 +90,7 @@ fun CityListScreen(
                         if ((newCityName.isNotBlank()) && newProvinceName.isNotBlank()) {
                             onAddCity(
                                 City(
-                                    name = newProvinceName,
+                                    name = newCityName,
                                     province = newProvinceName
                                 )
                             )
@@ -114,7 +114,9 @@ fun CityListScreen(
         {
             itemsIndexed(cities)
             { index, city ->
-                CityRow(city = city)
+                CityRow(city = city,
+                    onEditCity = onEditCity,
+                    onEditProv = onEditProv)
 
                 if (index < cities.lastIndex) {
                     HorizontalDivider()
@@ -126,9 +128,14 @@ fun CityListScreen(
 }
 
 @Composable
-fun CityRow(city: City) {
+fun CityRow(
+    city: City,
+    onEditCity: (City,String) -> Unit,
+    onEditProv: (City,String) -> Unit,
+    ){
     var newCityName by remember {mutableStateOf("")}
     var newProvinceName by remember{mutableStateOf("")}
+    val focusManager = LocalFocusManager.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,7 +145,6 @@ fun CityRow(city: City) {
             value = newCityName,
             onValueChange = { newCityName = it },
             label = { Text(city.name, fontSize = 20.sp,) },
-            modifier = Modifier.weight(1f),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
@@ -146,14 +152,28 @@ fun CityRow(city: City) {
                 unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent,
                 errorContainerColor = Color.Transparent
-                    )
+                    ),
+            modifier = Modifier
+                .weight(1f)
+                .onKeyEvent{
+                    //hardware key handling
+                    if(it.key == Key.Enter) {
+                        onEditCity(city,newCityName)
+                        newCityName = ""
+                        focusManager.clearFocus()
+                        true
+                    }
+                    else {
+                        false
+                    }
+                },
+
         )
 
         TextField(
             value = newProvinceName,
             onValueChange = { newProvinceName = it },
             label = { Text(city.province, fontSize = 20.sp,) },
-            modifier = Modifier.weight(1f),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
@@ -161,12 +181,27 @@ fun CityRow(city: City) {
                 unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent,
                 errorContainerColor = Color.Transparent
-            )
+            ),
+            modifier = Modifier
+                .weight(1f)
+                .onKeyEvent{
+                    //hardware key handling
+                    if(it.key == Key.Enter) {
+                        onEditProv(city,newProvinceName)
+                        newProvinceName = ""
+                        focusManager.clearFocus()
+                        true
+                    }
+                    else {
+                        false
+                    }
+                },
         )
 
     }
 }
 
+/* Don't see purpose of this
 @Preview(showBackground = true)
 @Composable
 fun CityListScreenPreview() {
@@ -181,7 +216,7 @@ fun CityListScreenPreview() {
         )
     }
 }
-
+*/
 
 //FOCUS AND KEYBPOARD INPUTET REF: https://www.youtube.com/watch?v=CHtso6Cwi94
 //https://developer.android.com/develop/ui/compose/touch-input/focus

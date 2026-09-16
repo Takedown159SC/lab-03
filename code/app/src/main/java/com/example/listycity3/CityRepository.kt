@@ -16,11 +16,11 @@ class CityRepository {
         _cities.add(city)
     }
 
-    fun editCityName(city:City,new_name:String){
-        city.name = new_name
+    fun editCityName(city:City,newName:String){
+        city.name = newName
     }
 
-    fun editCityProv(city:City, new_prov: String){
-        city.province = new_prov
+    fun editCityProv(city:City, newProv: String){
+        city.province = newProv
     }
 }
