@@ -1,6 +1,6 @@
 package com.example.listycity3
 
 data class City(
-    val name: String,
-    val province: String
+    var name: String,
+    var province: String
 )
